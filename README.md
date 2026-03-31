@@ -24,7 +24,7 @@ Art. 224 do CPC:
 - Python 3
 - JSON
 
-## ▶️ Como executar
+## Como executar
 
 ```bash
 python main.py
