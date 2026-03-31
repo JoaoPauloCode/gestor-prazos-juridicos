@@ -1,87 +1,117 @@
-from utils import carregar_processos, salvar_processos, converter_para_iso, converter_para_br, calcular_prioridade
+from utils import (
+    carregar_processos,
+    salvar_processos,
+    converter_para_iso,
+    converter_para_br
+)
+
+from services.prazo_service import calcular_prazo
+from datetime import datetime
+
 
 def menu():
-    print("\n--- Organizador de Processos ---")
-    print("1 - Cadastrar processo")
-    print("2 - Listar processos")
-    print("3 - Buscar processo")
-    print("4 - Sair")
+    while True:
+        print("\n" + "=" * 30)
+        print("GESTOR DE PRAZOS")
+        print("=" * 30)
+        print("1 - Cadastrar processo")
+        print("2 - Listar processos")
+        print("3 - Buscar processo")
+        print("4 - Sair")
 
+        opcao = input("Escolha uma opção: ")
 
-while True:
-    menu()
-    opcao = input("Escolha uma opção: ")
+        if opcao == "1":
+            numero = input("Número do processo: ")
+            nome = input("Nome da parte: ")
 
-    if opcao == "1":
-        nome = input("Nome do Autor(a): ")
-        while True:
-            prazo_input = input("Prazo (DD/MM/AAAA): ")
-            try:
-                prazo = converter_para_iso(prazo_input)
-                break
-            except:
-                print("Data inválida. Tente novamente.")
+            # validar data
+            while True:
+                data_input = input("Data inicial (DD/MM/AAAA): ")
+                try:
+                    data_iso = converter_para_iso(data_input)
+                    break
+                except ValueError:
+                    print("Data inválida.")
 
+            # validar número
+            while True:
+                try:
+                    dias = int(input("Quantidade de dias úteis: "))
+                    break
+                except ValueError:
+                    print("Digite um número válido.")
 
-        processos = carregar_processos()
+            prazo_final = calcular_prazo(data_iso, dias)
 
-        prioridade = calcular_prioridade(prazo)
-
-        processos.append({
-            "nome": nome,
-            "prazo": prazo,
-            "prioridade": prioridade
-        })
-
-        salvar_processos(processos)
-
-        print("Processo cadastrado com sucesso!")
-
-    elif opcao == "2":
-        from datetime import datetime
-        
-        hoje = datetime.now().date()
-        processos = carregar_processos()
-
-        for p in processos:
-            prazo_data = datetime.strptime(p["prazo"], "%Y-%m-%d").date()
-            dias_restantes = (prazo_data - hoje).days
-
-            prazo_br = converter_para_br(p["prazo"])
-
-            if dias_restantes <= 3:
-                status = "🔴 URGENTE"
-            elif dias_restantes <= 7:
-                status = "🟡 Normal"
+            processos = carregar_processos()
+            # verificar se já existe
+            if any(p["numero"] == numero for p in processos):
+                print("❌ Processo já cadastrado.")
             else:
-                status = "🟢 Baixa"
+                processos.append({
+                    "numero": numero,
+                    "nome": nome,
+                    "prazo": prazo_final
+                })
+                salvar_processos(processos)
+                print("✅ Processo cadastrado!")
 
-            print(f"Nome: {p['nome']}")
-            print(f"Prazo: {prazo_br}")
-            print(f"Status: {status}")
-            print("-" * 20)
+        elif opcao == "2":
+            processos = carregar_processos()
 
-    elif opcao == "3":
-        termo = input("Digite o nome para buscar: ").lower()
+            if not processos:
+                print("Nenhum processo cadastrado.")
+                continue
 
-        processos = carregar_processos()
+            processos.sort(key=lambda p: datetime.strptime(p["prazo"], "%Y-%m-%d"))
 
-        encontrados = [p for p in processos if termo in p["nome"].lower()]
+            hoje = datetime.today().date()
 
-        if not encontrados:
-            print("Nenhum processo encontrado.")
-        else:
-            for p in encontrados:
+            for p in processos:
+                prazo_data = datetime.strptime(p["prazo"], "%Y-%m-%d").date()
+                dias_restantes = (prazo_data - hoje).days
+
                 prazo_br = converter_para_br(p["prazo"])
-                prioridade = calcular_prioridade(p["prazo"])  # Recalcula prioridade atual
-                print(f"Nome: {p['nome']}")
-                print(f"Prazo: {prazo_br}")
-                print(f"Prioridade: {prioridade}")
-                print("-" * 20)
-    
-    elif opcao == "4":
-        print("Saindo...")
-        break
 
-    else:
-        print("Opção inválida")
+                if dias_restantes < 0:
+                    status = "⚫ VENCIDO"
+                elif dias_restantes <= 3:
+                    status = "🔴 URGENTE"
+                else:
+                    status = "🟢 NORMAL"
+
+                print("\n" + "=" * 30)
+                print(f"Processo: {p['numero']}")
+                print(f"Parte: {p['nome']}")
+                print(f"Prazo: {prazo_br}")
+                print(f"Dias restantes: {dias_restantes}")
+                print(f"Status: {status}")
+
+        elif opcao == "3":
+            termo = input("Digite número ou nome: ").lower()
+
+            encontrados = [
+                p for p in processos
+                if termo in p["numero"].lower() or termo in p["nome"].lower()
+            ]
+
+            if not encontrados:
+                print("Nenhum processo encontrado.")
+            else:
+                for p in encontrados:
+                    prazo_br = converter_para_br(p["prazo"])
+                    print("\n" + "=" * 30)
+                    print(f"Processo: {p['nome']}")
+                    print(f"Prazo: {prazo_br}")
+
+        elif opcao == "4":
+            print("Encerrando...")
+            break
+
+        else:
+            print("Opção inválida.")
+
+
+if __name__ == "__main__":
+    menu()

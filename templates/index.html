@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestor de Prazos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Gestor de Prazos</h1>
+  <div id="mensagem"></div>
+
+  <h2>Cadastrar Processo</h2>
+  <input id="numero" placeholder="Número">
+  <input id="nome" placeholder="Nome">
+  <input id="data" placeholder="Data (dd/mm/aaaa)">
+  <input id="dias" placeholder="Dias">
+  <button onclick="cadastrar()">Cadastrar</button>
+
+  <h2>Buscar Processo</h2>
+  <input id="buscarNumero" placeholder="Número">
+  <button onclick="buscar()">Buscar</button>
+
+  <h2>Lista de Processos</h2>
+  <button onclick="listar()">Atualizar Lista</button>
+  <ul id="lista"></ul>
+
+  <script src="script.js"></script>
+</body>
+</html>
