@@ -1,3 +1,7 @@
+## 📷 Preview
+
+![Preview do sistema](./screenshot.png)
+
 # ⚖️ Gestor de Prazos Processuais (Python)
 
 Sistema em Python para organização e controle de processos jurídicos, com cálculo de prazos conforme o Novo CPC.
