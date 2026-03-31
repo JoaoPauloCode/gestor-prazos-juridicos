@@ -1,61 +1,56 @@
+function formatarData(dataIso) {
+  const [ano, mes, dia] = dataIso.split('-');
+  return `${dia}/${mes}/${ano}`;
+}
+
 async function cadastrar() {
   const numero = document.getElementById("numero").value;
   const nome = document.getElementById("nome").value;
-  const data = document.getElementById("data").value;
+  const data_inicial = document.getElementById("data").value;
   const dias = document.getElementById("dias").value;
 
-  const response = await fetch("http://127.0.0.1:5000/processos", {
+  await fetch("/processos", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      numero,
-      nome,
-      data_inicial: data,
-      dias: parseInt(dias)
-    })
+    body: JSON.stringify({ numero, nome, data_inicial, dias })
   });
-
-  const result = await response.json();
-
-  if (response.ok) {
-  mostrarMensagem("Processo cadastrado com sucesso!", "sucesso");
-  } else {
-    mostrarMensagem(result.erro || "Erro ao cadastrar", "erro");
-  }
 
   listar();
 }
 
 async function listar() {
-  const response = await fetch("http://127.0.0.1:5000/processos");
-  const processos = await response.json();
+  const resposta = await fetch("/processos");
+  const resultado = await resposta.json();
+
+  const processos = resultado.dados; // 🔥 AQUI está a correção
 
   const lista = document.getElementById("lista");
   lista.innerHTML = "";
 
   processos.forEach(p => {
-    const item = document.createElement("li");
-
-    item.innerHTML = `
-      <strong>${p.numero}</strong> - ${p.nome}<br>
-      Prazo: ${p.prazo}
-      <br><br>
-      <button onclick="deletar('${p.numero}')">Deletar</button>
+    lista.innerHTML += `
+      <div>
+        ${p.numero} - ${p.nome} - ${formatarData(p.prazo)}
+        <button onclick="deletar('${p.numero}')">Deletar</button>
+      </div>
     `;
-
-    lista.appendChild(item);
   });
 }
 
 async function buscar() {
   const numero = document.getElementById("buscarNumero").value;
 
-  const response = await fetch(`http://127.0.0.1:5000/processos/${numero}`);
+  const response = await fetch(`/processos/${numero}`);
   const result = await response.json();
 
-  alert(JSON.stringify(result));
+  if (result.sucesso) {
+    const p = result.dados;
+    alert(`Processo encontrado:\nNúmero: ${p.numero}\nNome: ${p.nome}\nPrazo: ${formatarData(p.prazo)}`);
+  } else {
+    alert(result.erro);
+  }
 }
 
 function mostrarMensagem(texto, tipo) {
@@ -70,21 +65,9 @@ function mostrarMensagem(texto, tipo) {
 }
 
 async function deletar(numero) {
-  const confirmar = confirm("Tem certeza que deseja deletar?");
-
-  if (!confirmar) return;
-
-  const response = await fetch(`http://127.0.0.1:5000/processos/${numero}`, {
+  await fetch(`/processos/${numero}`, {
     method: "DELETE"
   });
 
-  const result = await response.json();
-  const processos = result.dados;
-
-  if (response.ok) {
-    mostrarMensagem("Processo deletado com sucesso!", "sucesso");
-    listar();
-  } else {
-    mostrarMensagem(result.erro || "Erro ao deletar", "erro");
-  }
+  listar();
 }

@@ -89,6 +89,7 @@ def menu():
                 print(f"Status: {status}")
 
         elif opcao == "3":
+            processos = carregar_processos()
             termo = input("Digite número ou nome: ").lower()
 
             encontrados = [
