@@ -9,9 +9,9 @@ body {
   max-width: 900px;
   margin: 40px auto;
   background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 h1 {
@@ -19,21 +19,35 @@ h1 {
   color: #2c3e50;
 }
 
+h2 {
+  margin-top: 25px;
+  color: #34495e;
+}
+
+/* 🔥 NOVO: organização horizontal */
+.form-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
 input {
   padding: 10px;
-  margin: 5px;
-  border-radius: 5px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  width: 22%;
+  flex: 1;
+  min-width: 120px;
 }
 
 button {
   padding: 10px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   background-color: #3498db;
   color: white;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 button:hover {
@@ -42,9 +56,9 @@ button:hover {
 
 .processo {
   background: #f9f9f9;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
-  border-radius: 5px;
+  border-radius: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,4 +70,23 @@ button:hover {
 
 .btn-delete:hover {
   background-color: #c0392b;
+}
+
+/* 🔥 mensagens */
+#mensagem {
+  display: none;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.sucesso {
+  background: #2ecc71;
+  color: white;
+}
+
+.erro {
+  background: #e74c3c;
+  color: white;
 }
