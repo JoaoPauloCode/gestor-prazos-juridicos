@@ -8,6 +8,7 @@ from services.prazo_service import calcular_prazo
 app = Flask(__name__)
 CORS(app)
 
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -24,13 +25,20 @@ def listar_processos():
 
 @app.route("/processos", methods=["POST"])
 def criar_processo():
-    data = request.json
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "sucesso": False,
+            "erro": "JSON inválido"
+        }), 400
 
     numero = data.get("numero")
     nome = data.get("nome")
-    data_inicial = data.get("data_inicial")
     dias = data.get("dias")
+    data_inicial = data.get("data_inicial")
 
+    # validações
     if not numero or not isinstance(numero, str):
         return jsonify({
             "sucesso": False,
@@ -41,6 +49,12 @@ def criar_processo():
         return jsonify({
             "sucesso": False,
             "erro": "Dias inválido"
+        }), 400
+
+    if not data_inicial:
+        return jsonify({
+            "sucesso": False,
+            "erro": "Data inicial obrigatória"
         }), 400
 
     processos = carregar_processos()
@@ -64,6 +78,8 @@ def criar_processo():
     novo = {
         "numero": numero,
         "nome": nome,
+        "data_inicial": data_iso,
+        "dias": int(dias),
         "prazo": prazo_final
     }
 
@@ -115,4 +131,4 @@ def deletar_processo(numero):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=True)

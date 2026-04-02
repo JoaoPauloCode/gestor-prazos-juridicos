@@ -1,17 +1,23 @@
 [
     {
         "numero": "123",
-        "nome": "joao",
-        "prazo": "2026-04-24"
+        "nome": "Mario",
+        "data_inicial": "2026-04-02",
+        "dias": 10,
+        "prazo": "2026-04-17"
     },
     {
         "numero": "456",
-        "nome": "jose",
-        "prazo": "2026-04-22"
+        "nome": "Luigi",
+        "data_inicial": "2026-04-02",
+        "dias": 15,
+        "prazo": "2026-04-27"
     },
     {
         "numero": "789",
-        "nome": "Maria",
-        "prazo": "2026-06-16"
+        "nome": "Yoshi",
+        "data_inicial": "2026-04-02",
+        "dias": 5,
+        "prazo": "2026-04-10"
     }
 ]

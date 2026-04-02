@@ -1,28 +1,17 @@
 const feriados = [
-  "2026-01-01",
-  "2026-02-16",
-  "2026-02-17",
-  "2026-02-18",
-  "2026-04-03",
-  "2026-04-05",
-  "2026-04-21",
-  "2026-05-01",
-  "2026-06-04",
-  "2026-09-07",
-  "2026-10-12",
-  "2026-11-02",
-  "2026-11-15",
-  "2026-11-20",
-  "2026-12-25"
+  "2026-01-01","2026-02-16","2026-02-17","2026-02-18",
+  "2026-04-03","2026-04-05","2026-04-21","2026-05-01",
+  "2026-06-04","2026-09-07","2026-10-12","2026-11-02",
+  "2026-11-15","2026-11-20","2026-12-25"
 ];
 
 function calcularPrazo(dataInicial, dias) {
   let data = new Date(dataInicial);
   let adicionados = 0;
 
-  while (adicionados < dias) {
-    data.setDate(data.getDate() + 1);
+  data.setDate(data.getDate() + 1);
 
+  while (adicionados < dias) {
     const diaSemana = data.getDay();
     const dataISO = data.toISOString().split("T")[0];
 
@@ -31,6 +20,10 @@ function calcularPrazo(dataInicial, dias) {
 
     if (!ehFimDeSemana && !ehFeriado) {
       adicionados++;
+    }
+
+    if (adicionados < dias) {
+      data.setDate(data.getDate() + 1);
     }
   }
 
@@ -48,10 +41,12 @@ async function cadastrar() {
   const data_inicial = document.getElementById("data").value;
   const dias = document.getElementById("dias").value;
 
- 
-  const prazoFinal = calcularPrazo(data_inicial, parseInt(dias));
+  if (!numero || !nome || !data_inicial || !dias) {
+    mostrarMensagem("Preencha todos os campos!", "erro");
+    return;
+  }
 
-  await fetch("/processos", {
+  const response = await fetch("/processos", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -59,12 +54,19 @@ async function cadastrar() {
     body: JSON.stringify({
       numero,
       nome,
-      prazo: prazoFinal
+      data_inicial, 
+      dias           
     })
   });
 
-  listar();
-  mostrarMensagem("Processo cadastrado com sucesso!", "sucesso");
+  const result = await response.json();
+
+  if (result.sucesso) {
+    listar(); // 🔥 atualiza lista
+    mostrarMensagem("Processo cadastrado com sucesso!", "sucesso");
+  } else {
+    mostrarMensagem(result.erro, "erro");
+  }
 }
 
 async function listar() {
@@ -73,8 +75,8 @@ async function listar() {
 
   const processos = resultado.dados;
 
-  const lista = document.getElementById("lista"); 
-  lista.innerHTML = ""; 
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
 
   processos.forEach(p => {
     const dataFormatada = formatarData(p.prazo);

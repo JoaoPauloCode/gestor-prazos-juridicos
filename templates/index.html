@@ -16,12 +16,22 @@
     <div id="mensagem"></div>
 
     <h2>Cadastrar Processo</h2>
+      <p>Informe a data de início e o prazo em dias úteis (CPC).</p>
 
     <div class="form-linha">
       <input id="numero" placeholder="Número">
       <input id="nome" placeholder="Nome">
-      <input type="date" id="data">
-      <input id="dias" placeholder="Dias" type="number">
+
+      <div>
+        <label>Data de início</label>
+        <input type="date" id="data">
+      </div>
+
+      <div>
+        <label>Dias úteis</label>
+        <input id="dias" type="number" placeholder="Ex: 10">
+      </div>
+
       <button onclick="cadastrar()">Cadastrar</button>
     </div>
 
