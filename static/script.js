@@ -18,22 +18,25 @@ async function cadastrar() {
   });
 
   listar();
+  alert("Processo cadastrado com sucesso!");
 }
 
 async function listar() {
   const resposta = await fetch("/processos");
   const resultado = await resposta.json();
 
-  const processos = resultado.dados; // 🔥 AQUI está a correção
+  const processos = resultado.dados;
 
   const lista = document.getElementById("lista");
   lista.innerHTML = "";
 
   processos.forEach(p => {
     lista.innerHTML += `
-      <div>
-        ${p.numero} - ${p.nome} - ${formatarData(p.prazo)}
-        <button onclick="deletar('${p.numero}')">Deletar</button>
+      <div class="processo">
+        <span>${p.numero} - ${p.nome} - ${p.prazo}</span>
+        <button class="btn-delete" onclick="deletar('${p.numero}')">
+          Excluir
+        </button>
       </div>
     `;
   });
@@ -65,9 +68,12 @@ function mostrarMensagem(texto, tipo) {
 }
 
 async function deletar(numero) {
+  if (!confirm("Tem certeza que deseja excluir?")) return;
+
   await fetch(`/processos/${numero}`, {
     method: "DELETE"
   });
 
   listar();
 }
+window.onload = listar;
